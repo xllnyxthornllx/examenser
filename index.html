@@ -1,93 +1,177 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Examen: Servicios de Red (DNS, Web, FTP)</title>
+    <title>Ubuntu Server Mastery: Examen de Servicios de Red</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
+        :root {
+            --transition-speed: 0.3s;
+        }
         body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            background-color: var(--bs-body-bg);
+            min-height: 100vh;
         }
         .exam-header {
-            background: linear-gradient(135deg, #004e92, #000428);
+            background: linear-gradient(135deg, #E95420, #772953); /* Ubuntu Colors */
             color: white;
-            padding: 2rem 0;
+            padding: 3rem 0;
             margin-bottom: 2rem;
-            border-radius: 0 0 20px 20px;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
         }
         .question-card {
-            margin-bottom: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            transition: transform 0.2s, background-color var(--transition-speed);
         }
         .question-card:hover {
-            transform: translateY(-5px);
+            transform: scale(1.01);
         }
-        .correct-feedback {
-            color: #155724;
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
+        .terminal-input {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #2c001e; /* Ubuntu Terminal Color */
+            color: #ffffff;
+            border: none;
             padding: 10px;
             border-radius: 5px;
-            margin-top: 10px;
-            display: none;
         }
-        .incorrect-feedback {
-            color: #721c24;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 10px;
-            border-radius: 5px;
+        .terminal-input::placeholder {
+            color: #aaaaaa;
+        }
+        [data-bs-theme="dark"] .question-card {
+            background-color: #2b2b2b;
+            color: #f0f0f0;
+        }
+        [data-bs-theme="dark"] .form-control {
+            background-color: #3d3d3d;
+            border-color: #555;
+            color: white;
+        }
+        .progress-container {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(var(--bs-body-bg-rgb), 0.9);
+            padding: 10px 0;
+            backdrop-filter: blur(5px);
+        }
+        .badge-ubuntu {
+            background-color: #E95420;
+        }
+        .explanation-text {
+            font-size: 0.9rem;
             margin-top: 10px;
-            display: none;
+            border-left: 4px solid #772953;
+            padding-left: 10px;
         }
         #results-container {
             display: none;
+            animation: fadeIn 0.5s ease-in;
         }
-        .badge-category {
-            background-color: #6c757d;
-            font-size: 0.8rem;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
+    <button class="btn btn-outline-secondary theme-toggle" id="themeSwitcher" title="Cambiar Tema">
+        <i class="bi bi-moon-stars-fill"></i>
+    </button>
+
     <header class="exam-header text-center">
         <div class="container">
-            <h1>Simulacro de Examen: Servicios de Red</h1>
-            <p class="lead">Semana 1-3: DNS, Web y FTP</p>
+            <h1><i class="bi bi-ubuntu"></i> Ubuntu Server Mastery</h1>
+            <p class="lead">Examen Avanzado: DNS, Web, FTP y Redes</p>
         </div>
     </header>
 
-    <main class="container mb-5">
-        <div id="exam-form">
-            <!-- Las preguntas se cargarán aquí dinámicamente -->
-            <div id="questions-list"></div>
+    <div class="progress-container shadow-sm mb-4">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small fw-bold">Progreso de Estudio</span>
+                <span id="progress-text" class="small fw-bold">0%</span>
+            </div>
+            <div class="progress" style="height: 10px;">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
 
-            <div class="text-center mt-4">
-                <button type="button" class="btn btn-primary btn-lg px-5" id="btn-submit" onclick="gradeExam()">Calificar Examen</button>
+    <main class="container pb-5">
+        <div id="exam-form">
+            <div id="questions-list">
+                <!-- Cargado dinámicamente -->
+            </div>
+
+            <div class="text-center mt-5">
+                <button type="button" class="btn btn-primary btn-lg px-5 shadow" id="btn-submit" onclick="gradeExam()">
+                    <i class="bi bi-check2-circle"></i> Finalizar y Calificar
+                </button>
             </div>
         </div>
 
-        <div id="results-container" class="mt-5 p-4 bg-white rounded shadow">
-            <h2 class="text-center mb-4">Resultados</h2>
-            <div class="alert alert-info text-center" id="score-summary"></div>
-            <div id="mistakes-review"></div>
-            <div class="text-center mt-3">
-                <button class="btn btn-secondary" onclick="location.reload()">Reiniciar Examen</button>
+        <div id="results-container" class="mt-4">
+            <div class="card shadow-lg p-5 text-center">
+                <h2 class="mb-4">Tu Resultado Final</h2>
+                <div class="display-1 fw-bold mb-3" id="score-display">0/0</div>
+                <div class="alert mb-4" id="score-message"></div>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded">
+                            <h4 id="count-dns">0</h4>
+                            <p class="text-muted mb-0">DNS</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded">
+                            <h4 id="count-web">0</h4>
+                            <p class="text-muted mb-0">Web</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded">
+                            <h4 id="count-ftp">0</h4>
+                            <p class="text-muted mb-0">FTP/Red</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="mistakes-review" class="text-start mt-4">
+                    <!-- Las preguntas corregidas se moverán aquí -->
+                </div>
+
+                <div class="mt-5">
+                    <button class="btn btn-secondary btn-lg" onclick="location.reload()">
+                        <i class="bi bi-arrow-clockwise"></i> Intentar de Nuevo
+                    </button>
+                </div>
             </div>
         </div>
     </main>
 
-    <footer class="text-center py-4 text-muted">
-        <p>Desarrollado para fines académicos &copy; 2026</p>
+    <footer class="text-center py-4 text-muted border-top mt-5">
+        <p>Preparación para Examen Técnico Ubuntu Server &copy; 2026</p>
+        <div class="small">DNS (Bind9) | Web (Apache2) | FTP (Vsftpd) | Network Tools</div>
     </footer>
 
-    <!-- Bootstrap JS & JS Custom -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
