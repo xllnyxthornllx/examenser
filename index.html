@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen: Servicios de Red (DNS, Web, FTP)</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .exam-header {
+            background: linear-gradient(135deg, #004e92, #000428);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        .question-card {
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .question-card:hover {
+            transform: translateY(-5px);
+        }
+        .correct-feedback {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        .incorrect-feedback {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        #results-container {
+            display: none;
+        }
+        .badge-category {
+            background-color: #6c757d;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="exam-header text-center">
+        <div class="container">
+            <h1>Simulacro de Examen: Servicios de Red</h1>
+            <p class="lead">Semana 1-3: DNS, Web y FTP</p>
+        </div>
+    </header>
+
+    <main class="container mb-5">
+        <div id="exam-form">
+            <!-- Las preguntas se cargarán aquí dinámicamente -->
+            <div id="questions-list"></div>
+
+            <div class="text-center mt-4">
+                <button type="button" class="btn btn-primary btn-lg px-5" id="btn-submit" onclick="gradeExam()">Calificar Examen</button>
+            </div>
+        </div>
+
+        <div id="results-container" class="mt-5 p-4 bg-white rounded shadow">
+            <h2 class="text-center mb-4">Resultados</h2>
+            <div class="alert alert-info text-center" id="score-summary"></div>
+            <div id="mistakes-review"></div>
+            <div class="text-center mt-3">
+                <button class="btn btn-secondary" onclick="location.reload()">Reiniciar Examen</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-4 text-muted">
+        <p>Desarrollado para fines académicos &copy; 2026</p>
+    </footer>
+
+    <!-- Bootstrap JS & JS Custom -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
