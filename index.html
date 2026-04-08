@@ -48,6 +48,7 @@
             border: none;
             padding: 10px;
             border-radius: 5px;
+            width: 100%;
         }
         .terminal-input::placeholder {
             color: #aaaaaa;
@@ -71,6 +72,7 @@
         }
         .badge-ubuntu {
             background-color: #E95420;
+            color: white;
         }
         .explanation-text {
             font-size: 0.9rem;
@@ -90,7 +92,7 @@
 </head>
 <body>
 
-    <button class="btn btn-outline-secondary theme-toggle" id="themeSwitcher" title="Cambiar Tema">
+    <button class="btn btn-outline-secondary theme-toggle shadow-sm" id="themeSwitcher" title="Cambiar Tema">
         <i class="bi bi-moon-stars-fill"></i>
     </button>
 
@@ -127,28 +129,28 @@
         </div>
 
         <div id="results-container" class="mt-4">
-            <div class="card shadow-lg p-5 text-center">
+            <div class="card shadow-lg p-4 p-md-5 text-center">
                 <h2 class="mb-4">Tu Resultado Final</h2>
                 <div class="display-1 fw-bold mb-3" id="score-display">0/0</div>
                 <div class="alert mb-4" id="score-message"></div>
                 
-                <div class="row g-3 mb-4">
-                    <div class="col-md-4">
-                        <div class="p-3 border rounded">
-                            <h4 id="count-dns">0</h4>
-                            <p class="text-muted mb-0">DNS</p>
+                <div class="row g-3 mb-4 text-center">
+                    <div class="col-4">
+                        <div class="p-2 border rounded">
+                            <h4 id="count-dns" class="mb-0">0</h4>
+                            <p class="text-muted small mb-0">DNS</p>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="p-3 border rounded">
-                            <h4 id="count-web">0</h4>
-                            <p class="text-muted mb-0">Web</p>
+                    <div class="col-4">
+                        <div class="p-2 border rounded">
+                            <h4 id="count-web" class="mb-0">0</h4>
+                            <p class="text-muted small mb-0">Web</p>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="p-3 border rounded">
-                            <h4 id="count-ftp">0</h4>
-                            <p class="text-muted mb-0">FTP/Red</p>
+                    <div class="col-4">
+                        <div class="p-2 border rounded">
+                            <h4 id="count-ftp" class="mb-0">0</h4>
+                            <p class="text-muted small mb-0">FTP/Red</p>
                         </div>
                     </div>
                 </div>
@@ -168,11 +170,267 @@
 
     <footer class="text-center py-4 text-muted border-top mt-5">
         <p>Preparación para Examen Técnico Ubuntu Server &copy; 2026</p>
-        <div class="small">DNS (Bind9) | Web (Apache2) | FTP (Vsftpd) | Network Tools</div>
+        <div class="small text-uppercase">DNS (Bind9) | Web (Apache2) | FTP (Vsftpd) | Network Tools</div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    
+    <script>
+        // --- BANCO DE PREGUNTAS ---
+        const questions = [
+            {
+                id: 1, category: "DNS", type: "choice",
+                question: "¿Cuál es el archivo de configuración de BIND9 donde se declaran las zonas personalizadas en Ubuntu?",
+                options: ["/etc/bind/bind.conf", "/etc/bind/named.conf.local", "/etc/bind/zones.conf", "/etc/named/named.conf"],
+                answer: 1, explanation: "En Ubuntu, 'named.conf.local' es el lugar estándar para tus zonas."
+            },
+            {
+                id: 2, category: "DNS", type: "fill",
+                question: "Comando para verificar la sintaxis de la configuración de BIND9:",
+                answer: "named-checkconf", explanation: "Verifica named.conf y archivos incluidos."
+            },
+            {
+                id: 3, category: "DNS", type: "fill",
+                question: "Comando para verificar la integridad de un archivo de zona (ej. db.empresa.com):",
+                answer: "named-checkzone", explanation: "Uso: named-checkzone <dominio> <archivo>."
+            },
+            {
+                id: 4, category: "DNS", type: "choice",
+                question: "¿Qué registro DNS asocia un nombre de host con una dirección IPv4?",
+                options: ["Registro A", "Registro AAAA", "Registro MX", "Registro PTR"],
+                answer: 0, explanation: "El registro A (Address) apunta un nombre a una IP."
+            },
+            {
+                id: 5, category: "DNS", type: "tf",
+                question: "El registro MX se utiliza para redirigir el tráfico de correo electrónico.",
+                answer: true, explanation: "Correcto. MX significa Mail Exchange."
+            },
+            {
+                id: 6, category: "DNS", type: "fill",
+                question: "Servicio de DNS en Ubuntu para gestionar con systemctl:",
+                answer: "bind9", explanation: "sudo systemctl restart bind9."
+            },
+            {
+                id: 7, category: "Web", type: "fill",
+                question: "Comando para habilitar un sitio en Apache2:",
+                answer: "a2ensite", explanation: "Habilita archivos en sites-available."
+            },
+            {
+                id: 8, category: "Web", type: "fill",
+                question: "Comando para habilitar un módulo en Apache2:",
+                answer: "a2enmod", explanation: "Ejemplo: sudo a2enmod rewrite."
+            },
+            {
+                id: 9, category: "Web", type: "choice",
+                question: "¿Cuál es el DocumentRoot por defecto de Apache en Ubuntu?",
+                options: ["/var/www/site", "/var/www/html", "/usr/www/html", "/etc/apache2/www"],
+                answer: 1, explanation: "/var/www/html es el estándar."
+            },
+            {
+                id: 10, category: "Web", type: "fill",
+                question: "Comando para probar la configuración de Apache antes de reiniciar:",
+                answer: "apache2ctl", explanation: "Uso: sudo apache2ctl configtest."
+            },
+            {
+                id: 11, category: "Web", type: "tf",
+                question: "El puerto por defecto de HTTP es el 443.",
+                answer: false, explanation: "Falso. HTTP usa el 80; HTTPS usa el 443."
+            },
+            {
+                id: 12, category: "Web", type: "choice",
+                question: "¿En qué archivo se guardan los errores de Apache por defecto?",
+                options: ["access.log", "syslog", "error.log", "apache.err"],
+                answer: 2, explanation: "Ubicado en /var/log/apache2/error.log."
+            },
+            {
+                id: 13, category: "FTP", type: "choice",
+                question: "¿Qué parámetro permite el acceso a usuarios locales en Vsftpd?",
+                options: ["local_enable=YES", "write_enable=YES", "anonymous_enable=YES", "chroot_local_user=YES"],
+                answer: 0, explanation: "Permite que usuarios de /etc/passwd entren."
+            },
+            {
+                id: 14, category: "FTP", type: "choice",
+                question: "¿Qué opción 'enjaula' al usuario en su home?",
+                options: ["userlist_enable", "chroot_local_user", "pasv_enable", "secure_chroot_dir"],
+                answer: 1, explanation: "Evita que el usuario vea archivos del sistema."
+            },
+            {
+                id: 15, category: "FTP", type: "fill",
+                question: "Comando para subir archivos en la consola FTP:",
+                answer: "put", explanation: "put para subir, get para descargar."
+            },
+            {
+                id: 16, category: "FTP", type: "fill",
+                question: "Comando para ver puertos escuchando con procesos en Linux:",
+                answer: "netstat", explanation: "netstat -plnt o ss -plnt."
+            },
+            {
+                id: 17, category: "FTP", type: "tf",
+                question: "En modo pasivo de FTP, el servidor es quien inicia la conexión de datos.",
+                answer: false, explanation: "Falso. En modo pasivo, el CLIENTE inicia la conexión."
+            },
+            {
+                id: 18, category: "Red", type: "fill",
+                question: "Comando moderno que reemplaza a ifconfig:",
+                answer: "ip", explanation: "ip addr show."
+            },
+            {
+                id: 19, category: "Red", type: "choice",
+                question: "¿Cómo ver logs en tiempo real mientras ocurren?",
+                options: ["cat", "less", "tail -f", "nano"],
+                answer: 2, explanation: "tail -f sigue el archivo al final."
+            },
+            {
+                id: 20, category: "Red", type: "fill",
+                question: "Comando para gestionar servicios (start/stop/restart):",
+                answer: "systemctl", explanation: "Comando base de systemd."
+            }
+        ];
+
+        // --- LÓGICA DE TEMAS ---
+        const themeSwitcher = document.getElementById('themeSwitcher');
+        const htmlEl = document.documentElement;
+
+        function setTheme(theme) {
+            htmlEl.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('ubuntu-exam-theme', theme);
+            themeSwitcher.innerHTML = theme === 'light' ? '<i class="bi bi-moon-stars-fill"></i>' : '<i class="bi bi-sun-fill"></i>';
+        }
+
+        themeSwitcher.addEventListener('click', () => {
+            const current = htmlEl.getAttribute('data-bs-theme');
+            setTheme(current === 'light' ? 'dark' : 'light');
+        });
+
+        // Inicializar tema
+        const savedTheme = localStorage.getItem('ubuntu-exam-theme') || 'light';
+        setTheme(savedTheme);
+
+        // --- RENDERIZADO ---
+        function renderQuestions() {
+            const container = document.getElementById('questions-list');
+            if(!container) return;
+            container.innerHTML = '';
+
+            questions.forEach((q, idx) => {
+                let optionsHtml = '';
+                if (q.type === 'choice') {
+                    optionsHtml = q.options.map((opt, i) => `
+                        <div class=\"form-check my-2\">
+                            <input class=\"form-check-input\" type=\"radio\" name=\"q${q.id}\" id=\"q${q.id}o${i}\" value=\"${i}\">
+                            <label class=\"form-check-label w-100\" for=\"q${q.id}o${i}\">${opt}</label>
+                        </div>
+                    `).join('');
+                } else if (q.type === 'fill') {
+                    optionsHtml = `<input type=\"text\" class=\"form-control terminal-input mt-2\" name=\"q${q.id}\" placeholder=\"Escribe el comando...\">`;
+                } else if (q.type === 'tf') {
+                    optionsHtml = `
+                        <div class=\"d-flex gap-4 mt-2\">
+                            <div class=\"form-check\">
+                                <input class=\"form-check-input\" type=\"radio\" name=\"q${q.id}\" id=\"q${q.id}t\" value=\"true\">
+                                <label class=\"form-check-label\" for=\"q${q.id}t\">Verdadero</label>
+                            </div>
+                            <div class=\"form-check\">
+                                <input class=\"form-check-input\" type=\"radio\" name=\"q${q.id}\" id=\"q${q.id}f\" value=\"false\">
+                                <label class=\"form-check-label\" for=\"q${q.id}f\">Falso</label>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <div class=\"card question-card p-4\">
+                        <div class=\"d-flex justify-content-between align-items-center mb-2\">
+                            <span class=\"badge badge-ubuntu rounded-pill px-3 py-1 small\">${q.category}</span>
+                            <span class=\"text-muted small\">P${idx+1}</span>
+                        </div>
+                        <h5 class=\"mb-3\">${q.question}</h5>
+                        <div class=\"options-wrapper\">${optionsHtml}</div>
+                        <div id=\"feedback-${q.id}\" class=\"mt-3\"></div>
+                    </div>
+                `;
+            });
+
+            // Escuchar cambios para la barra de progreso
+            document.querySelectorAll('input').forEach(el => {
+                el.addEventListener('change', updateProgress);
+                if (el.type === 'text') el.addEventListener('input', updateProgress);
+            });
+        }
+
+        function updateProgress() {
+            const answered = questions.filter(q => {
+                const el = document.querySelector(`input[name="q${q.id}"]`);
+                if (q.type === 'fill') return el && el.value.trim() !== "";
+                return document.querySelector(`input[name="q${q.id}"]:checked`);
+            }).length;
+            const percent = Math.round((answered / questions.length) * 100);
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('progress-text').innerText = percent + '%';
+        }
+
+        function gradeExam() {
+            let score = 0;
+            let dns = 0, web = 0, ftp = 0;
+            
+            questions.forEach(q => {
+                let isCorrect = false;
+                const feedback = document.getElementById(`feedback-${q.id}`);
+
+                if (q.type === 'choice') {
+                    const sel = document.querySelector(`input[name="q${q.id}"]:checked`);
+                    isCorrect = sel && parseInt(sel.value) === q.answer;
+                } else if (q.type === 'fill') {
+                    const el = document.querySelector(`input[name="q${q.id}"]`);
+                    const val = el ? el.value.trim().toLowerCase() : "";
+                    isCorrect = val.includes(q.answer.toLowerCase());
+                } else if (q.type === 'tf') {
+                    const sel = document.querySelector(`input[name="q${q.id}"]:checked`);
+                    isCorrect = sel && (sel.value === "true") === q.answer;
+                }
+
+                if (isCorrect) {
+                    score++;
+                    if (q.category === 'DNS') dns++;
+                    else if (q.category === 'Web') web++;
+                    else ftp++;
+                    feedback.innerHTML = `<div class=\"alert alert-success py-2 small border-0 mt-2\"><i class=\"bi bi-check-circle-fill\"></i> ¡Correcto! ${q.explanation}</div>`;
+                } else {
+                    let correctVal = q.type === 'choice' ? q.options[q.answer] : (q.type === 'tf' ? (q.answer ? "Verdadero" : "Falso") : q.answer);
+                    feedback.innerHTML = `
+                        <div class=\"alert alert-danger py-2 small border-0 mt-2\">
+                            <i class=\"bi bi-x-circle-fill\"></i> Incorrecto. La respuesta era: <strong>${correctVal}</strong>
+                            <div class=\"mt-1 small opacity-75\">${q.explanation}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            // Mostrar Resultados
+            document.getElementById('exam-form').style.display = 'none';
+            document.getElementById('results-container').style.display = 'block';
+            document.getElementById('score-display').innerText = `${score} / ${questions.length}`;
+            
+            const msg = document.getElementById('score-message');
+            const percent = (score / questions.length) * 100;
+            msg.className = `alert alert-${percent >= 70 ? 'success' : 'warning'}`;
+            msg.innerHTML = percent >= 70 ? "<h4>¡Excelente!</h4>Estás muy bien preparado." : "<h4>Sigue practicando</h4>Revisa tus errores abajo.";
+
+            document.getElementById('count-dns').innerText = dns;
+            document.getElementById('count-web').innerText = web;
+            document.getElementById('count-ftp').innerText = ftp;
+
+            const review = document.getElementById('mistakes-review');
+            review.innerHTML = '';
+            review.appendChild(document.getElementById('questions-list').cloneNode(true));
+            review.querySelectorAll('input').forEach(i => i.disabled = true);
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Arrancar
+        document.addEventListener('DOMContentLoaded', renderQuestions);
+    </script>
 </body>
 </html>
